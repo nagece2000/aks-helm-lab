@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-webapp-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-webapp
+  template:
+    metadata:
+      labels:
+        app: flask-webapp
+    spec:
+      containers:
+      - name: flask-webapp
+        image: acrhelmlab.azurecr.io/flask-webapp:v1
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DB_HOST
+          value: "localhost"
+        - name: DB_NAME
+          value: "helmdb"
+        - name: DB_USER
+          value: "helmuser"
+        - name: DB_PASSWORD
+          value: "helmpass"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-webapp-test
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    app: flask-webapp
