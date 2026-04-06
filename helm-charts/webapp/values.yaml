@@ -1,0 +1,77 @@
+# Flask webapp configuration
+replicaCount: 2
+
+image:
+  repository: acrhelmlab.azurecr.io/flask-webapp
+  pullPolicy: IfNotPresent
+  tag: "v2"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 5000
+
+# Environment variables for database connection
+env:
+  - name: DB_HOST
+    value: "webapp-postgresql"
+  - name: DB_PORT
+    value: "5432"
+  - name: DB_NAME
+    value: "helmdb"
+  - name: DB_USER
+    value: "helmuser"
+  - name: DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: postgres-secret
+        key: password
+
+# Health checks
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 5000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 5000
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+
+ingress:
+  enabled: false
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

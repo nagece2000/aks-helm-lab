@@ -85,6 +85,8 @@ def health():
     """Health check endpoint"""
     return {'status': 'healthy', 'service': 'flask-app'}, 200
 
+# Initialize database on startup (runs with Gunicorn too)
+init_db()
+
 if __name__ == '__main__':
-    init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)

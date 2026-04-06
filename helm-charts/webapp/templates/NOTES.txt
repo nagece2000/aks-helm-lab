@@ -1,0 +1,25 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+To get the application URL, run:
+
+{{- if contains "LoadBalancer" .Values.service.type }}
+  
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+  
+  You can watch the status by running:
+  
+    kubectl get service {{ include "webapp.fullname" . }} --watch
+  
+  Once you have an EXTERNAL-IP, visit:
+  
+    http://<EXTERNAL-IP>
+
+{{- else }}
+  
+  kubectl port-forward service/{{ include "webapp.fullname" . }} 8080:{{ .Values.service.port }}
+  
+  Then visit: http://127.0.0.1:8080
+
+{{- end }}
