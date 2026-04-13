@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "webapp.fullname" . }}-post-upgrade  # ← Changed name
+  labels:
+    {{- include "webapp.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-weight": "0"
+    # Removed hook-delete-policy so job stays around
+spec:
+  template:
+    metadata:
+      name: {{ include "webapp.fullname" . }}-post-upgrade
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: post-upgrade
+        image: busybox:latest
+        command: ['sh', '-c', 'echo "=== UPGRADE HOOK EXECUTED ===" && echo "Upgrade completed at $(date)" && sleep 10']
